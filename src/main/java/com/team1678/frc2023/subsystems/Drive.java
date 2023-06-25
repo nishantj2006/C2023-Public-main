@@ -22,9 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.team1678.frc2023.Constants.SwerveConstants.*;
@@ -32,7 +30,6 @@ import com.team1678.frc2023.Constants.SwerveConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.team1678.frc2023.Constants;
 import com.team1678.frc2023.Robot;
 import com.team1678.frc2023.Constants.SwerveConstants;
@@ -48,7 +45,7 @@ public class Drive extends Subsystem {
         AUTO_BALANCE
     }
 
-    private AHRS mPigeon = new AHRS(SerialPort.Port.kUSB);
+    private Pigeon mPigeon = Pigeon.getInstance();
     public SwerveModule[] mModules;
 
     private PeriodicIO mPeriodicIO = new PeriodicIO();
@@ -79,7 +76,7 @@ public class Drive extends Subsystem {
         mOdometry = new SwerveDriveOdometry(SwerveConstants.kKinematics, getModuleStates());
         mMotionPlanner = new DriveMotionPlanner();
 
-        mPigeon.reset();
+        mPigeon.setYaw(0.0);
 
         LoggingSystem.getInstance().registerObject(SwerveModule.class, mModules[0], "MOD_0");
         LoggingSystem.getInstance().registerObject(SwerveModule.class, mModules[1], "MOD_1");
@@ -212,8 +209,8 @@ public class Drive extends Subsystem {
         mPeriodicIO.timestamp = Timer.getFPGATimestamp();
         mPeriodicIO.meas_module_states = getModuleStates();
         mPeriodicIO.meas_chassis_speeds = SwerveConstants.kKinematics.toChassisSpeeds(mPeriodicIO.meas_module_states);
-        mPeriodicIO.heading = Rotation2d.fromDegrees(mPigeon.getYaw());
-        mPeriodicIO.pitch = Rotation2d.fromDegrees(mPigeon.getPitch());
+        mPeriodicIO.heading = mPigeon.getYaw();
+        mPeriodicIO.pitch = mPigeon.getPitch();
 
         smoothed_pitch_velocity.addNumber((mPeriodicIO.pitch.getDegrees() - last_pitch) / Constants.kLooperDt);
         last_pitch = mPeriodicIO.pitch.getDegrees();
@@ -317,7 +314,8 @@ public class Drive extends Subsystem {
     }
 
     public void zeroGyro(double reset){
-        mPigeon.reset();
+        mPigeon.setYaw(reset);
+        mPigeon.setPitch(0.0);
     }
 
     public void setNeutralBrake(boolean brake) {
@@ -377,7 +375,7 @@ public class Drive extends Subsystem {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(mPigeon.getYaw());
+        return mPigeon.getYaw();
     }
 
     public DriveMotionPlanner getTrajectoryFollower() {
@@ -434,7 +432,7 @@ public class Drive extends Subsystem {
 
     @Log
     public double getPitch() {
-        return mPigeon.getPitch();
+        return mPigeon.getPitch().getDegrees();
     }
 
     @Log
