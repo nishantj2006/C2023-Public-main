@@ -1,10 +1,11 @@
 package com.team1678.lib.drivers;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.kauailabs.navx.frc.AHRS;
 import com.team1678.frc2023.Constants;
-import com.team1678.frc2023.Ports;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.SerialPort;
 
 public class Pigeon {
 
@@ -12,13 +13,14 @@ public class Pigeon {
 
     public static Pigeon getInstance() {
         if (mInstance == null) {
-            mInstance = new Pigeon(Ports.PIGEON);
+            mInstance = new Pigeon();
         }
         return mInstance;
     }
 
     // Actual pigeon object
-    private final Pigeon2 mGyro;
+    private final AHRS mGyro;
+    
 
     // Configs
     private boolean inverted = Constants.SwerveConstants.invertGyro;
@@ -26,9 +28,9 @@ public class Pigeon {
     private Rotation2d rollAdjustmentAngle = new Rotation2d();
     private Rotation2d pitchAdjustmentAngle = new Rotation2d();
 
-    private Pigeon(int port) {        
-        mGyro = new Pigeon2(port, "canivore1");
-        mGyro.configFactoryDefault();
+    private Pigeon() {        
+        mGyro = new AHRS(SerialPort.Port.kUSB);
+        
     }
 
     public Rotation2d getYaw() {
@@ -71,9 +73,7 @@ public class Pigeon {
      * @param angleDeg New yaw in degrees
      */
     public void setPitch(double angleDeg) {
-        mGyro.getYawPitchRoll(new double[]{mGyro.getYaw(), mGyro.getPitch(), angleDeg});
-        pitchAdjustmentAngle = getUnadjustedPitch().rotateBy(Rotation2d.fromDegrees(angleDeg).unaryMinus());
-        System.out.println("Reset gyro to " + getPitch().getDegrees());
+        
     }
 
     public Rotation2d getUnadjustedYaw() {
