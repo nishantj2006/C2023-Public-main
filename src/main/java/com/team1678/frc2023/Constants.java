@@ -88,10 +88,10 @@ public class Constants {
                 public static final boolean driveEnableCurrentLimit = true;
         
                 /* Swerve Profiling Values */
-                public static final double maxSpeed = 5.4864; // meters per second
+                public static final double maxSpeed = 4.1148; // meters per second
                 public static final double maxAngularVelocity = 11.5;
 
-                public static final double maxAttainableSpeed = maxSpeed * 0.85; // Max out at 85% to make sure speeds are attainable (4.6 mps)
+                public static final double maxAttainableSpeed = maxSpeed * 0.9; // Max out at 85% to make sure speeds are attainable (4.6 mps)
 
                 /* Angle Motor PID Values */
                 public static final double angleKP = 0.3;

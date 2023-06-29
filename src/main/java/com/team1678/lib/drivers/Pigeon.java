@@ -30,7 +30,7 @@ public class Pigeon {
 
     private Pigeon() {        
         mGyro = new AHRS(SerialPort.Port.kUSB);
-        
+        mGyro.reset();
     }
 
     public Rotation2d getYaw() {
